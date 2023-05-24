@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-
+import { User } from "./user";
 const express = require("express");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
@@ -8,13 +8,15 @@ export async function initServer() {
   const app = express();
   app.use(bodyParser.json());
   const graphqlServer = new ApolloServer({
-    typeDefs: `type Query {
-          sayHello:String
+    typeDefs: `
+    ${User.types}
+    type Query {
+      ${User.queries}
     }
     `,
     resolvers: {
       Query: {
-        sayHello: () => `Hello from server`,
+        ...User.resolvers.queries,
       },
     },
   });

@@ -10,3 +10,8 @@ typescript -v
 tsc init
 yarn add express
 yarn add tsc-watch
+
+<!-- DB commands -->
+npm install prisma --save-dev
+npx prisma init --datasource-provider postgresql
+npx prisma migrate dev --name added_user_model

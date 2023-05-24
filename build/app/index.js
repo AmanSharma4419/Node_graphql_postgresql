@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initServer = void 0;
 const body_parser_1 = __importDefault(require("body-parser"));
+const user_1 = require("./user");
 const express = require("express");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
@@ -22,14 +23,14 @@ function initServer() {
         const app = express();
         app.use(body_parser_1.default.json());
         const graphqlServer = new ApolloServer({
-            typeDefs: `type Query {
-          sayHello:String
+            typeDefs: `
+    ${user_1.User.types}
+    type Query {
+      ${user_1.User.queries}
     }
     `,
             resolvers: {
-                Query: {
-                    sayHello: () => `Hello from server`,
-                },
+                Query: Object.assign({}, user_1.User.resolvers.queries),
             },
         });
         yield graphqlServer.start();
