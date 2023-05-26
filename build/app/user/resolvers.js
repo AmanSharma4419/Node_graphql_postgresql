@@ -24,10 +24,17 @@ const queries = {
         const { data } = yield axios_1.default.get(googleAuthUrl.toString(), {
             responseType: "json",
         });
+        const authTokenGeneration = (userId) => {
+            const token = jwt_1.default.generateTokenForUser(userId);
+            return token;
+        };
         const user = yield index_1.prismaClient.user.findUnique({
             where: { email: data.email },
         });
-        if (!user) {
+        if (user) {
+            return authTokenGeneration(user.id);
+        }
+        else {
             const user = yield index_1.prismaClient.user.create({
                 data: {
                     email: data.email,
@@ -36,8 +43,7 @@ const queries = {
                     profileImage: data.picture,
                 },
             });
-            const token = yield jwt_1.default.generateTokenForUser(user.id);
-            return token;
+            return authTokenGeneration(user.id);
         }
     }),
 };

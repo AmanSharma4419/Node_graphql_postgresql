@@ -32,11 +32,16 @@ const queries = {
         responseType: "json",
       }
     );
+    const authTokenGeneration = (userId: string) => {
+      const token = JWTService.generateTokenForUser(userId);
+      return token;
+    };
     const user = await prismaClient.user.findUnique({
       where: { email: data.email },
     });
-
-    if (!user) {
+    if (user) {
+      return authTokenGeneration(user.id);
+    } else {
       const user = await prismaClient.user.create({
         data: {
           email: data.email,
@@ -45,8 +50,7 @@ const queries = {
           profileImage: data.picture,
         },
       });
-      const token = await JWTService.generateTokenForUser(user.id);
-      return token;
+      return authTokenGeneration(user.id);
     }
   },
 };
